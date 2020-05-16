@@ -27,9 +27,136 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
+class Stack():
+    def __init__(self):
+        self.stack = []
+    def push(self, value):
+        self.stack.append(value)
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+    def size(self):
+        return len(self.stack)
+
+class Queue():
+    def __init__(self):
+        self.queue = []
+    def enqueue(self, value):
+        self.queue.append(value)
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue)
 traversal_path = []
 
+def dft(vertex_start):
+    s = Stack()
+    visited = set()
+    visit_order = []
 
+    s.push(vertex_start)
+
+    while s.size() > 0:
+        vert = s.pop()
+        if vert not in visited:
+            
+            visited.add(vert)
+            visit_order.append(vert)
+            if vert.e_to != None:
+                s.push(vert.e_to)
+            if vert.s_to != None:
+                s.push(vert.s_to)
+            if vert.w_to != None:
+                s.push(vert.w_to)
+            if vert.n_to != None:
+                s.push(vert.n_to)
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+    return visit_order
+#print('check', dft(world.starting_room))
+def bfs(vertex_start, vertex_dest):
+    q = Queue()
+    visited = set()
+    pathord = []
+    q.enqueue([(vertex_start, 'x')])
+
+    while q.size() > 0:
+        path = q.dequeue() 
+            
+        if path[-1] not in visited:
+            visited.add(path[-1])
+            
+            if path[-1][0].e_to != None:
+                if path[-1][0].e_to == vertex_dest:
+                    pathord = path[:]
+                    pathord.append((path[-1][0].e_to, 'e'))
+                    return pathord
+                new_path = path[:]
+                new_path.append((path[-1][0].e_to, 'e'))
+                q.enqueue(new_path)
+            
+            if path[-1][0].s_to != None:
+                if path[-1][0].s_to == vertex_dest:
+                    pathord = path[:]
+                    pathord.append((path[-1][0].s_to, 's'))
+                    return pathord
+                new_path = path[:]
+                new_path.append((path[-1][0].s_to, 's'))
+                q.enqueue(new_path)
+
+            if path[-1][0].w_to != None:
+                if path[-1][0].w_to == vertex_dest:
+                    pathord = path[:]
+                    pathord.append((path[-1][0].w_to, 'w'))
+                    return pathord
+                new_path = path[:]
+                new_path.append((path[-1][0].w_to, 'w'))
+                q.enqueue(new_path)
+            
+            if path[-1][0].n_to != None:
+                if path[-1][0].n_to == vertex_dest:
+                    pathord = path[:]
+                    pathord.append((path[-1][0].n_to, 'n'))
+                    return pathord
+                new_path = path[:]
+                new_path.append((path[-1][0].n_to, 'n'))
+                q.enqueue(new_path)
+
+            
+            
+            
+
+            
+            
+            
+                
+            
+        
+    return None
+print('check2',bfs(world.starting_room, world.starting_room.n_to))
+def build_route(starting_room):
+    roomord = dft(starting_room)
+    path_taken = []
+    for i in range(len(roomord)-1):
+        path_section = bfs(roomord[i], roomord[i+1])
+        for x in path_section:
+            if x[1] != 'x':
+                path_taken.append(x[1])
+    return path_taken
+traversal_path = build_route(world.starting_room)
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
@@ -45,8 +172,6 @@ if len(visited_rooms) == len(room_graph):
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
-
-
 
 #######
 # UNCOMMENT TO WALK AROUND
